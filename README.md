@@ -37,7 +37,7 @@ The scan needs a development build. Component names come from Angular's dev-mode
 - A comment on the pull request with the counts and a table of findings: impact, rule, component, page and element. Each push updates the same comment.
 - The same text in the job summary, followed by the full Markdown report.
 - An artifact, `a11y-report`, with the report as Markdown, JSON and HTML.
-- A failed check when a finding is at or above `fail-on` (`serious` by default).
+- A failed check when a finding is at or above `fail-on` (`serious` by default), or when a page doesn't load or scan.
 
 ## Adopt it on an app with known issues
 
@@ -62,11 +62,12 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 
 | Input | Default | What it does |
 |---|---|---|
-| `routes` | (required) | Routes to scan, one per line or comma-separated. |
+| `routes` | (required) | Routes to scan, one per line. Commas also separate routes, so a route can't contain a comma. |
 | `serve` | | Command that starts the dev server, e.g. `npx ng serve`. The scan starts it, waits for `base-url`, and stops it afterwards. Leave it empty if a server is already running. |
 | `base-url` | `http://localhost:4200` | Origin of the dev server. |
 | `working-directory` | `.` | Directory of the Angular app. `serve` runs here and `baseline` is relative to it. |
 | `fail-on` | `serious` | `minor`, `moderate`, `serious`, `critical`, or `none` to never fail on findings. With a baseline, only new findings count. |
+| `fail-on-scan-error` | `true` | Fail the check when a page doesn't load or scan, e.g. a timeout or an error in the app. |
 | `baseline` | | Path to a previous run's JSON report. |
 | `color-scheme` | `light` | `light`, `dark` or `both`. The dark pass lists only problems the light pass doesn't have. |
 | `dark-class` | | Class on `<html>` that turns on your dark theme. Implies `both`. |
@@ -79,7 +80,7 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `wait` | `1500` | Milliseconds to wait after each page loads. |
 | `comment` | `true` | Comment on pull requests. |
 | `upload-artifact` | `true` | Upload the reports. |
-| `artifact-name` | `a11y-report` | Artifact name. Give each scan its own name if a workflow runs more than one; each also gets its own comment. |
+| `artifact-name` | `a11y-report` | Artifact name. It must be unique in the workflow run, so a matrix or a second scan needs its own, e.g. `a11y-report-${{ matrix.app }}`. Each name also gets its own comment. |
 | `devtools-version` | `0.18.0` | Version of `@ngbracket/a11y-devtools` to run. |
 | `playwright-version` | `1.63.0` | Version of Playwright to run the browser with. |
 | `github-token` | `github.token` | Token for the comment. |
@@ -100,13 +101,19 @@ The [CLI reference](https://ngbracket.com/tools/a11y-devtools/docs/cli) describe
 
 A pull request from a fork gets a read-only token, so the action can't comment. It logs a warning, and the result is still in the job summary and the artifact.
 
+Don't switch to `pull_request_target` to get the comment back. That event runs with a write token, and this action runs the pull request's code (`npm ci` and your dev server). Keep the scan on `pull_request`.
+
 ## How it installs
 
 The action installs `@ngbracket/a11y-devtools` and Playwright into a temporary folder, so your `package.json` and lockfile aren't touched. Chromium is cached between runs. On Linux runners Playwright also installs the browser's system libraries.
 
 ## What a scan covers
 
-Automated checks cover only part of WCAG. A clean scan means axe and the keyboard checks found nothing on the routes you listed. You still need to check by keyboard, with a screen reader, and review the content. [What the scan covers](https://ngbracket.com/tools/a11y-devtools/docs/coverage) goes into detail.
+Automated checks cover only part of WCAG. A clean scan means axe found nothing at or above `fail-on` on the routes you listed, and the keyboard checks found nothing if you turned them on. You still need to check by keyboard, with a screen reader, and review the content. [What the scan covers](https://ngbracket.com/tools/a11y-devtools/docs/coverage) goes into detail.
+
+## Versions
+
+`@v1` moves to each 1.x release. A release can change the default `devtools-version` and `playwright-version`, which can add rules and so add findings. To control when that happens, pin a release (`@v1.0.0`) or set `devtools-version` yourself. The [changelog](CHANGELOG.md) lists the versions each release uses.
 
 ## Licence
 

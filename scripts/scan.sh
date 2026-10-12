@@ -6,6 +6,8 @@ set -uo pipefail
 
 cli="$NGBR_A11Y_TOOLS/node_modules/@ngbracket/a11y-devtools/bin/ngbr-a11y-report.mjs"
 out_dir="$RUNNER_TEMP/ngbr-a11y-report"
+# Self-hosted runners keep RUNNER_TEMP between jobs: never report an old run.
+rm -rf "$out_dir"
 mkdir -p "$out_dir"
 prefix="$out_dir/a11y"
 
@@ -13,7 +15,10 @@ args=(--base "$IN_BASE_URL" --out "$prefix" --format all)
 
 routes=0
 while IFS= read -r route; do
-  route="$(echo "$route" | xargs)"
+  # Trim spaces and tabs (and a CR from Windows line endings).
+  route="${route%$'\r'}"
+  route="${route#"${route%%[![:space:]]*}"}"
+  route="${route%"${route##*[![:space:]]}"}"
   [ -n "$route" ] || continue
   args+=(--route "$route")
   routes=$((routes + 1))

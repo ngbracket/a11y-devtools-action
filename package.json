@@ -1,0 +1,13 @@
+{
+  "name": "a11y-devtools-action",
+  "private": true,
+  "type": "module",
+  "description": "GitHub Action that runs @ngbracket/a11y-devtools report mode on an Angular dev build.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
