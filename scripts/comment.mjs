@@ -1,9 +1,6 @@
 // Posts the scan result on the pull request, or updates the comment this
-// action posted before (a bot comment starting with the same marker). A token
-// without write access (e.g. a pull request from a fork) gets a warning, not a
-// failure.
-import { readFileSync } from 'node:fs';
-import { pathToFileURL } from 'node:url';
+// action posted before (a bot comment starting with the same marker).
+// comment-cli.mjs runs it from the action.
 
 /** GitHub rejects comments over 65,536 characters. */
 export const MAX_COMMENT_CHARS = 60_000;
@@ -60,29 +57,3 @@ export async function upsertComment({ api, token, repo, pr, body, fetchImpl = fe
   const created = await github('POST', `/repos/${repo}/issues/${pr}/comments`, { body: text });
   return { action: 'posted', url: created.html_url };
 }
-
-async function main() {
-  const env = process.env;
-  try {
-    const { action, url } = await upsertComment({
-      api: env.GITHUB_API_URL || 'https://api.github.com',
-      token: env.GITHUB_TOKEN,
-      repo: env.GITHUB_REPOSITORY,
-      pr: env.PR_NUMBER,
-      body: readFileSync(env.COMMENT_FILE, 'utf8'),
-    });
-    console.log(`${action === 'updated' ? 'Updated' : 'Posted'} comment ${url}`);
-  } catch (error) {
-    if (error.status === 403 || error.status === 404) {
-      console.log(
-        `::warning title=Accessibility scan::Couldn't comment on the pull request (${error.status}). ` +
-          'Give the job "permissions: pull-requests: write". Pull requests from forks get a read-only token, ' +
-          'so the result is in the job summary instead.',
-      );
-    } else {
-      console.log(`::warning title=Accessibility scan::Couldn't comment on the pull request: ${error.message}`);
-    }
-  }
-}
-
-if (import.meta.url === pathToFileURL(process.argv[1]).href) await main();

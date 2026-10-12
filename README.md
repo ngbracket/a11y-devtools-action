@@ -111,6 +111,10 @@ The action installs `@ngbracket/a11y-devtools` and Playwright into a temporary f
 
 Automated checks cover only part of WCAG. A clean scan means axe found nothing at or above `fail-on` on the routes you listed, and the keyboard checks found nothing if you turned them on. You still need to check by keyboard, with a screen reader, and review the content. [What the scan covers](https://ngbracket.com/tools/a11y-devtools/docs/coverage) goes into detail.
 
+## Development
+
+The scripts have no dependencies. `npm test` runs the tests with Node's built-in test runner.
+
 ## Versions
 
 `@v1` moves to each 1.x release. A release can change the default `devtools-version` and `playwright-version`, which can add rules and so add findings. To control when that happens, pin a release (`@v1.0.0`) or set `devtools-version` yourself. The [changelog](CHANGELOG.md) lists the versions each release uses.

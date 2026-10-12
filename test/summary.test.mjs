@@ -70,7 +70,7 @@ test('fail-on none says the gate is off', () => {
   const { body, verdict } = buildSummary({ pages: [{ label: '/', findings: [finding('region', 'moderate')] }] }, { ...opts, failOn: 'none' });
   assert.equal(verdict, 'pass');
   assert.match(body, /Accessibility scan: finished/);
-  assert.match(body, /The gate is off/);
+  assert.match(body, /Findings don't fail the check/);
 });
 
 test('table cells escape pipes and the row count is capped', () => {
@@ -78,4 +78,11 @@ test('table cells escape pipes and the row count is capped', () => {
   const { body } = buildSummary({ pages: [{ label: '/', findings: many }] }, { ...opts, failOn: 'critical' });
   assert.match(body, /`div\\\|x0`/);
   assert.match(body, /5 more in the full report\./);
+});
+
+test('fail-on none with page errors still says pages that do not scan fail', () => {
+  const report = { pages: [{ label: '/slow', error: 'Timed out', findings: [] }] };
+  const { body, verdict } = buildSummary(report, { ...opts, failOn: 'none' });
+  assert.equal(verdict, 'fail');
+  assert.match(body, /Findings don't fail the check \(`fail-on: none`\)\. Pages that don't scan still do\./);
 });
