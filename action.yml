@@ -1,0 +1,184 @@
+name: Angular a11y scan (ngbracket a11y-devtools)
+description: Scan an Angular dev build with axe-core, name the component behind each finding, and fail the check on new problems.
+author: ngbracket
+branding:
+  icon: eye
+  color: blue
+
+inputs:
+  routes:
+    description: Routes to scan, one per line (or comma-separated), e.g. "/" and "/settings".
+    required: true
+  serve:
+    description: Command that starts the dev server, e.g. "npx ng serve". The scan starts it, waits for base-url, and stops it afterwards. Leave empty if a server is already running.
+    default: ''
+  base-url:
+    description: Origin of the dev server.
+    default: http://localhost:4200
+  working-directory:
+    description: Directory of the Angular app (where the serve command runs and relative paths resolve).
+    default: .
+  fail-on:
+    description: Fail the check on findings at or above this impact (minor, moderate, serious, critical). With a baseline, only new findings count. "none" never fails on findings.
+    default: serious
+  baseline:
+    description: Path to a previous run's JSON report (relative to working-directory). Known findings in it stop failing the check.
+    default: ''
+  color-scheme:
+    description: light, dark or both.
+    default: light
+  dark-class:
+    description: Class on <html> that turns on the dark theme. Implies color-scheme both.
+    default: ''
+  dark-attribute:
+    description: Attribute on <html> that turns on the dark theme, as name=value. Implies color-scheme both.
+    default: ''
+  keyboard:
+    description: Also run the keyboard checks (unreachable controls, click without keyboard, tab-order mismatch).
+    default: 'false'
+  focus-traps:
+    description: Also walk each route with Tab presses to find keyboard traps.
+    default: 'false'
+  tags:
+    description: Comma-separated axe tags to limit the rules, e.g. wcag22aa,best-practice.
+    default: ''
+  framework-prefixes:
+    description: Comma-separated component-name prefixes to treat as third-party primitives during attribution.
+    default: ''
+  serve-timeout:
+    description: Seconds to wait for the serve command to answer.
+    default: '180'
+  wait:
+    description: Settle time in milliseconds after each page loads.
+    default: '1500'
+  comment:
+    description: On pull requests, post the result as a comment and update it on each push. Needs pull-requests write permission.
+    default: 'true'
+  upload-artifact:
+    description: Upload the Markdown, JSON and HTML reports as a workflow artifact.
+    default: 'true'
+  artifact-name:
+    description: Name of the uploaded artifact.
+    default: a11y-report
+  devtools-version:
+    description: Version of @ngbracket/a11y-devtools to run.
+    default: 0.18.0
+  playwright-version:
+    description: Version of Playwright to drive the browser with.
+    default: 1.63.0
+  github-token:
+    description: Token used to post the pull request comment.
+    default: ${{ github.token }}
+
+outputs:
+  findings:
+    description: Number of findings (node instances) across all routes.
+    value: ${{ steps.result.outputs.findings }}
+  distinct-rules:
+    description: Number of distinct axe rules that fired.
+    value: ${{ steps.result.outputs.distinct-rules }}
+  new:
+    description: Findings not in the baseline (empty without a baseline).
+    value: ${{ steps.result.outputs.new }}
+  fixed:
+    description: Baseline findings that are gone (empty without a baseline).
+    value: ${{ steps.result.outputs.fixed }}
+  report-json:
+    description: Path to the JSON report. Commit it as the next baseline.
+    value: ${{ steps.scan.outputs.report-json }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install a11y-devtools and Playwright
+      shell: bash
+      env:
+        DEVTOOLS_VERSION: ${{ inputs.devtools-version }}
+        PLAYWRIGHT_VERSION: ${{ inputs.playwright-version }}
+      run: |
+        tools="$RUNNER_TEMP/ngbr-a11y-tools"
+        mkdir -p "$tools"
+        # Own prefix, so the app's dependencies are untouched. Peers are skipped:
+        # report mode doesn't load Angular, it drives the app in a browser.
+        npm install --no-save --no-audit --no-fund --legacy-peer-deps --prefix "$tools" \
+          "@ngbracket/a11y-devtools@$DEVTOOLS_VERSION" "playwright@$PLAYWRIGHT_VERSION"
+        echo "NGBR_A11Y_TOOLS=$tools" >> "$GITHUB_ENV"
+
+    - name: Cache the Playwright browser
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: ngbr-a11y-playwright-${{ runner.os }}-${{ inputs.playwright-version }}
+
+    - name: Install Chromium
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          "$NGBR_A11Y_TOOLS/node_modules/.bin/playwright" install --with-deps chromium
+        else
+          "$NGBR_A11Y_TOOLS/node_modules/.bin/playwright" install chromium
+        fi
+
+    - name: Scan
+      id: scan
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        IN_ROUTES: ${{ inputs.routes }}
+        IN_SERVE: ${{ inputs.serve }}
+        IN_BASE_URL: ${{ inputs.base-url }}
+        IN_FAIL_ON: ${{ inputs.fail-on }}
+        IN_BASELINE: ${{ inputs.baseline }}
+        IN_COLOR_SCHEME: ${{ inputs.color-scheme }}
+        IN_DARK_CLASS: ${{ inputs.dark-class }}
+        IN_DARK_ATTRIBUTE: ${{ inputs.dark-attribute }}
+        IN_KEYBOARD: ${{ inputs.keyboard }}
+        IN_FOCUS_TRAPS: ${{ inputs.focus-traps }}
+        IN_TAGS: ${{ inputs.tags }}
+        IN_FRAMEWORK_PREFIXES: ${{ inputs.framework-prefixes }}
+        IN_SERVE_TIMEOUT: ${{ inputs.serve-timeout }}
+        IN_WAIT: ${{ inputs.wait }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/scan.sh"
+
+    - name: Summarise
+      id: result
+      if: always() && steps.scan.outputs.report-json != ''
+      shell: bash
+      env:
+        REPORT_JSON: ${{ steps.scan.outputs.report-json }}
+        REPORT_MD: ${{ steps.scan.outputs.report-md }}
+        SCAN_EXIT: ${{ steps.scan.outputs.exit-code }}
+        IN_FAIL_ON: ${{ inputs.fail-on }}
+        IN_ARTIFACT_NAME: ${{ inputs.artifact-name }}
+        IN_UPLOAD_ARTIFACT: ${{ inputs.upload-artifact }}
+      run: node "$GITHUB_ACTION_PATH/scripts/summary.mjs"
+
+    - name: Upload the reports
+      if: always() && inputs.upload-artifact == 'true' && steps.scan.outputs.report-dir != ''
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ steps.scan.outputs.report-dir }}
+        if-no-files-found: ignore
+
+    - name: Comment on the pull request
+      if: always() && inputs.comment == 'true' && steps.result.outputs.comment-file != '' && (github.event_name == 'pull_request' || github.event_name == 'pull_request_target')
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        COMMENT_FILE: ${{ steps.result.outputs.comment-file }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: node "$GITHUB_ACTION_PATH/scripts/comment.mjs"
+
+    - name: Apply the gate
+      if: always()
+      shell: bash
+      env:
+        SCAN_EXIT: ${{ steps.scan.outputs.exit-code }}
+      run: |
+        case "$SCAN_EXIT" in
+          0) exit 0 ;;
+          1) echo "::error title=Accessibility scan::Findings at or above the fail-on level. See the job summary." ; exit 1 ;;
+          '') echo "::error title=Accessibility scan::The scan didn't run." ; exit 1 ;;
+          *) echo "::error title=Accessibility scan::The scan stopped with exit code $SCAN_EXIT. See the Scan step log." ; exit "$SCAN_EXIT" ;;
+        esac
