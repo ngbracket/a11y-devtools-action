@@ -1,4 +1,4 @@
-name: Angular a11y scan (ngbracket a11y-devtools)
+name: ngbracket a11y-devtools
 description: Scan an Angular dev build with axe-core, name the component behind each finding, and fail the check on new problems.
 author: ngbracket
 branding:
