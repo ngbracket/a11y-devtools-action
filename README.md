@@ -1,4 +1,4 @@
-# Angular a11y scan
+# ngbracket a11y-devtools
 
 A GitHub Action that runs [@ngbracket/a11y-devtools](https://ngbracket.com/tools/a11y-devtools) on your Angular app in CI. It starts your dev server, scans the routes you list with axe-core, and names the Angular component that rendered each problem. On a pull request it posts the result as a comment and fails the check when there are findings at or above the level you choose.
 
