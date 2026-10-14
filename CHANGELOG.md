@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 (2026-10-14)
+
+Runs `@ngbracket/a11y-devtools` 0.18.1 by default. That release stops `ngbr/unreachable-control` reporting the touch target in Angular Material 15 to 21 checkboxes and radio buttons: Tab reaches the input beside it.
+
 ## 1.0.1 (2026-10-13)
 
 Renamed the action to "ngbracket a11y-devtools", to match the npm package. Inputs, outputs and behaviour are unchanged.
