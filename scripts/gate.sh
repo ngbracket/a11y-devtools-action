@@ -9,9 +9,9 @@ if [ -z "${SCAN_EXIT:-}" ]; then
   exit 1
 fi
 if [ "${SCAN_EXIT:-}" != 0 ] && [ -z "${REPORT_JSON:-}" ]; then
-  # No report: the CLI stopped before scanning (bad input, the dev server
-  # didn't start, or the browser couldn't launch).
-  echo "::error title=Accessibility scan::The scan stopped with exit code $SCAN_EXIT before writing a report. See the Scan step log and any errors above."
+  # No report: the CLI stopped before scanning (bad input, the Angular build
+  # failed, the dev server didn't start, or the browser couldn't launch).
+  echo "::error title=Accessibility scan::The scan stopped with exit code $SCAN_EXIT before writing a report. See the Scan step log: if the Angular build failed, its errors are at the end."
   exit 1
 fi
 case "${SCAN_EXIT:-}" in
