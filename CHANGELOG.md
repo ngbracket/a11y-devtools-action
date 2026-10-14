@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3 (2026-10-14)
+
+Runs `@ngbracket/a11y-devtools` 0.18.2 by default. When the Angular build fails, the Scan step now stops within seconds instead of waiting 3 minutes for a dev server that never starts. The check's error message says where to find the build errors.
+
 ## 1.0.2 (2026-10-14)
 
 Runs `@ngbracket/a11y-devtools` 0.18.1 by default. That release stops `ngbr/unreachable-control` reporting the touch target in Angular Material 15 to 21 checkboxes and radio buttons: Tab reaches the input beside it.

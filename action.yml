@@ -65,7 +65,7 @@ inputs:
     default: a11y-report
   devtools-version:
     description: Version of @ngbracket/a11y-devtools to run.
-    default: 0.18.1
+    default: 0.18.2
   playwright-version:
     description: Version of Playwright to drive the browser with.
     default: 1.63.0

@@ -76,12 +76,12 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `focus-traps` | `false` | Also press Tab through each route to find keyboard traps. |
 | `tags` | | Comma-separated axe tags to limit the rules, e.g. `wcag22aa,best-practice`. |
 | `framework-prefixes` | | Component-name prefixes to treat as third-party primitives, e.g. `Mat,Cdk,Nz`. |
-| `serve-timeout` | `180` | Seconds to wait for the dev server. |
+| `serve-timeout` | `180` | Seconds to wait for the dev server. A failed Angular build stops the scan straight away. |
 | `wait` | `1500` | Milliseconds to wait after each page loads. |
 | `comment` | `true` | Comment on pull requests. |
 | `upload-artifact` | `true` | Upload the reports. |
 | `artifact-name` | `a11y-report` | Artifact name. It must be unique in the workflow run, so a matrix or a second scan needs its own, e.g. `a11y-report-${{ matrix.app }}`. Each name also gets its own comment. |
-| `devtools-version` | `0.18.1` | Version of `@ngbracket/a11y-devtools` to run. |
+| `devtools-version` | `0.18.2` | Version of `@ngbracket/a11y-devtools` to run. |
 | `playwright-version` | `1.63.0` | Version of Playwright to run the browser with. |
 | `github-token` | `github.token` | Token for the comment. |
 
@@ -138,9 +138,9 @@ For pnpm with `cache: pnpm`, install pnpm with `pnpm/action-setup` before `actio
 
 `actions/setup-node` with `cache: npm` looks for `package-lock.json`. If your project uses another package manager, change or remove `cache`. If the app is in a subfolder, point setup-node at its lockfile with `cache-dependency-path`, for example `apps/web/package-lock.json`, and set the action's `working-directory` to the same folder. If there's no `package.json` anywhere, check that the workflow is in the repo that holds the Angular app.
 
-### The scan fails with "Dev server didn't answer" or "Dev server command exited"
+### The scan fails with "The Angular build failed", "Dev server didn't answer" or "Dev server command exited"
 
-"Didn't answer" means the dev server didn't respond within `serve-timeout` seconds. "Command exited" means the `serve` command stopped before the server responded, for example because the script doesn't exist. Either way, the log shows the last lines the server printed, under "Last output". The usual causes:
+"The Angular build failed" means `ng serve` printed a build error. "Didn't answer" means the dev server didn't respond within `serve-timeout` seconds. "Command exited" means the `serve` command stopped before the server responded, for example because the script doesn't exist. Each time, the log shows the last lines the server printed, under "Last output". The usual causes:
 
 - The Angular build failed. Look for `ERROR` in the last output. A common one is `Could not resolve "…"` for a file in a git submodule: add `submodules: true` to `actions/checkout`.
 - The build is slow. Raise `serve-timeout` (180 seconds by default).
