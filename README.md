@@ -111,6 +111,73 @@ The action installs `@ngbracket/a11y-devtools` and Playwright into a temporary f
 
 Automated checks cover only part of WCAG. A clean scan means axe found nothing at or above `fail-on` on the routes you listed, and the keyboard checks found nothing if you turned them on. You still need to check by keyboard, with a screen reader, and review the content. [What the scan covers](https://ngbracket.com/tools/a11y-devtools/docs/coverage) goes into detail.
 
+## FAQ
+
+### Does it work with Bun, pnpm or Yarn?
+
+The action installs its own tools with npm into a temporary folder, so your app's package manager doesn't matter to it. Replace the `npm ci` step with your package manager's install. Keep `actions/setup-node`, because the scan runs on Node 20.19, 22.12, or 24 and later.
+
+This is the Bun version, tested on the Angular RealWorld example app:
+
+```yaml
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - uses: ngbracket/a11y-devtools-action@v1
+        with:
+          serve: npx ng serve
+          routes: /
+```
+
+For pnpm with `cache: pnpm`, install pnpm with `pnpm/action-setup` before `actions/setup-node`, or setup-node can't find it.
+
+### Setup fails with "Dependencies lock file is not found"
+
+`actions/setup-node` with `cache: npm` looks for `package-lock.json`. If your project uses another package manager, change or remove `cache`. If the app is in a subfolder, point setup-node at its lockfile with `cache-dependency-path`, for example `apps/web/package-lock.json`, and set the action's `working-directory` to the same folder. If there's no `package.json` anywhere, check that the workflow is in the repo that holds the Angular app.
+
+### The scan fails with "Dev server didn't answer" or "Dev server command exited"
+
+"Didn't answer" means the dev server didn't respond within `serve-timeout` seconds. "Command exited" means the `serve` command stopped before the server responded, for example because the script doesn't exist. Either way, the log shows the last lines the server printed, under "Last output". The usual causes:
+
+- The Angular build failed. Look for `ERROR` in the last output. A common one is `Could not resolve "…"` for a file in a git submodule: add `submodules: true` to `actions/checkout`.
+- The build is slow. Raise `serve-timeout` (180 seconds by default).
+- The server runs on another port. Set `base-url`.
+- The app needs a script before it serves, such as code generation in a `prestart` script. Use `serve: npm start` instead of `npx ng serve`.
+
+### `npm ci` fails while building `node-sass`
+
+Older Angular projects sometimes still list `node-sass`. Version 4 has no prebuilt binary for current Node, so npm tries to compile it and fails with `gyp ERR!`. The Angular CLI compiles Sass with the `sass` package, so `node-sass` is usually unused. Skip install scripts, then run any your app needs:
+
+```yaml
+      - run: npm ci --ignore-scripts
+      - run: npm run postinstall # only if package.json has one, e.g. ngcc on Angular 15
+```
+
+### The workflow doesn't run in my fork
+
+GitHub turns off Actions in a new fork. Open the fork's Actions tab and enable workflows.
+
+### There's no comment on my pull request
+
+The action comments only on `pull_request` runs, when the workflow has `pull-requests: write` permission and `comment` is `true`. A run started any other way, such as from the Actions tab, puts the result in the job summary and the `a11y-report` artifact instead.
+
+A pull request from a fork into the original repo gets a read-only token, so the action can't comment there either. If you're trying the action in your own fork, open the pull request against your fork's default branch. See [Pull requests from forks](#pull-requests-from-forks) before changing the trigger.
+
+### Every finding says "(unknown component)"
+
+The scan ran against a production build. Component names come from Angular's dev-mode debug API, so `serve` has to start a development build, such as `ng serve` with its default configuration.
+
+### The report shows the login page, or an empty page
+
+The scan isn't signed in to your app. Routes behind a login redirect to the login page, and pages that load data from an API show whatever that API returns. List routes that render without signing in, and check the page labels in the first report.
+
+### Does a clean scan mean the app is accessible?
+
+No. It means the automated checks found nothing at or above `fail-on` on the routes you listed. You still need to check by keyboard, with a screen reader, and review the content. See [What a scan covers](#what-a-scan-covers).
+
 ## Development
 
 The scripts have no dependencies. `npm test` runs the tests with Node's built-in test runner.
