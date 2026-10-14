@@ -81,7 +81,7 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `comment` | `true` | Comment on pull requests. |
 | `upload-artifact` | `true` | Upload the reports. |
 | `artifact-name` | `a11y-report` | Artifact name. It must be unique in the workflow run, so a matrix or a second scan needs its own, e.g. `a11y-report-${{ matrix.app }}`. Each name also gets its own comment. |
-| `devtools-version` | `0.18.0` | Version of `@ngbracket/a11y-devtools` to run. |
+| `devtools-version` | `0.18.1` | Version of `@ngbracket/a11y-devtools` to run. |
 | `playwright-version` | `1.63.0` | Version of Playwright to run the browser with. |
 | `github-token` | `github.token` | Token for the comment. |
 
