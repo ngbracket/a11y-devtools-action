@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4 (2026-10-15)
+
+Runs `@ngbracket/a11y-devtools` 0.18.3 by default. Pages served with a strict Content-Security-Policy or Trusted Types are now scanned. Before, each one was reported as an error with no findings.
+
 ## 1.0.3 (2026-10-14)
 
 Runs `@ngbracket/a11y-devtools` 0.18.2 by default. When the Angular build fails, the Scan step now stops within seconds instead of waiting 3 minutes for a dev server that never starts. The check's error message says where to find the build errors.
