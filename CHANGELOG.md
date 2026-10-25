@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5 (2026-10-25)
+
+Runs `@ngbracket/a11y-devtools` 0.18.6 by default. With a baseline, a known finding whose selector only changed position (`li:nth-child(3)` becoming `li:nth-child(4)`, or a generated id such as `#mat-input-3` moving to `#mat-input-7`) is matched to its baseline entry instead of failing the check as new. 0.18.5's overlay fixes don't affect the action, which runs report mode.
+
 ## 1.0.4 (2026-10-15)
 
 Runs `@ngbracket/a11y-devtools` 0.18.3 by default. Pages served with a strict Content-Security-Policy or Trusted Types are now scanned. Before, each one was reported as an error with no findings.
