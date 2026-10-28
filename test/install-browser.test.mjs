@@ -11,7 +11,7 @@ const script = new URL('../scripts/install-browser.sh', import.meta.url).pathnam
  * Runs install-browser.sh with a stub Playwright CLI that records each call,
  * and a stub playwright module whose chromium.launch() works or fails.
  */
-function run(env, { launches = true } = {}) {
+function run(env, { launches = true, cwd } = {}) {
   const tools = join(mkdtempSync(join(tmpdir(), 'ngbr-a11y-action-')), 'tools');
   const bin = join(tools, 'node_modules/.bin');
   const pkg = join(tools, 'node_modules/playwright');
@@ -29,6 +29,7 @@ function run(env, { launches = true } = {}) {
     } };`,
   );
   const res = spawnSync('bash', [script], {
+    cwd,
     env: { ...process.env, RUNNER_OS: 'Linux', IN_BROWSER_DEPS: 'auto', ...env, NGBR_A11Y_TOOLS: tools },
     encoding: 'utf8',
   });
@@ -79,4 +80,18 @@ test('rejects an unknown browser-deps value', () => {
   assert.equal(status, 1);
   assert.match(stdout, /must be auto or always\. Got "never"/);
   assert.deepEqual(installs, []);
+});
+
+test("launches the action's own Playwright, not the app's", () => {
+  // An app checkout with its own playwright whose launch fails.
+  const app = mkdtempSync(join(tmpdir(), 'ngbr-a11y-app-'));
+  mkdirSync(join(app, 'node_modules/playwright'), { recursive: true });
+  writeFileSync(
+    join(app, 'node_modules/playwright/index.js'),
+    "exports.chromium = { launch: async () => { throw new Error('wrong playwright'); } };",
+  );
+  const { installs, stdout } = run({}, { cwd: app });
+  assert.deepEqual(installs, ['install chromium']);
+  assert.match(stdout, /aren't installed/);
+  assert.doesNotMatch(stdout, /wrong playwright/);
 });
