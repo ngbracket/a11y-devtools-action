@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 (2026-10-28)
+
+On Linux, the action no longer runs apt on every scan. It installs Chromium, tries to start it, and installs the browser's system packages only when it can't start. GitHub's Ubuntu runners already have the libraries, so apt is skipped there. In some runs on a slow Ubuntu mirror, apt took 10 minutes, against about 3 minutes for the whole job without it.
+
+The skipped packages also add font packages for Chinese, Japanese, Thai and some other scripts. If your app shows text in those scripts, set the new `browser-deps` input to `always` to keep installing them. Still runs `@ngbracket/a11y-devtools` 0.18.6 and Playwright 1.63.0.
+
 ## 1.0.5 (2026-10-25)
 
 Runs `@ngbracket/a11y-devtools` 0.18.6 by default. With a baseline, a known finding whose selector only changed position (`li:nth-child(3)` becoming `li:nth-child(4)`, or a generated id such as `#mat-input-3` moving to `#mat-input-7`) is matched to its baseline entry instead of failing the check as new. The overlay fixes in 0.18.4 and 0.18.5 don't affect the action, which runs report mode.

@@ -83,6 +83,7 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `artifact-name` | `a11y-report` | Artifact name. It must be unique in the workflow run, so a matrix or a second scan needs its own, e.g. `a11y-report-${{ matrix.app }}`. Each name also gets its own comment. |
 | `devtools-version` | `0.18.6` | Version of `@ngbracket/a11y-devtools` to run. |
 | `playwright-version` | `1.63.0` | Version of Playwright to run the browser with. |
+| `browser-deps` | `auto` | Linux only. `auto` installs Chromium's system packages only when the browser can't start without them. `always` installs them on every run. See [How it installs](#how-it-installs). |
 | `github-token` | `github.token` | Token for the comment. |
 
 The [CLI reference](https://ngbracket.com/tools/a11y-devtools/docs/cli) describes each option in more detail.
@@ -105,7 +106,11 @@ Don't switch to `pull_request_target` to get the comment back. That event runs w
 
 ## How it installs
 
-The action installs `@ngbracket/a11y-devtools` and Playwright into a temporary folder, so your `package.json` and lockfile aren't touched. Chromium is cached between runs. On Linux runners Playwright also installs the browser's system libraries.
+The action installs `@ngbracket/a11y-devtools` and Playwright into a temporary folder, so your `package.json` and lockfile aren't touched. Chromium is cached between runs.
+
+On Linux, the action starts Chromium once before the scan. If it can't start, the action installs the browser's system packages with apt. GitHub's Ubuntu runners already have the libraries Chromium needs, so apt is skipped there. In a container or on a self-hosted runner without them, the first run installs them.
+
+Playwright's system packages also add font packages for Chinese, Japanese, Thai and some other scripts, which GitHub's Ubuntu runners don't install. Without them, text in those scripts may render in another font or as empty boxes, which can change the layout around it. If your app shows text in those scripts, set `browser-deps: always` to install the packages on every run, as releases before 1.1.0 did. It adds about 25 MB from the Ubuntu mirror to each run, which can take several minutes when the mirror is slow.
 
 ## What a scan covers
 
