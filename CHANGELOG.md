@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1 (2026-10-28)
+
+Fixes the 1.1.0 launch check in jobs that run in a checkout with its own `playwright` package. The check loaded the app's Playwright, which looked for a different browser build, so it failed and apt ran anyway. It now loads the action's own Playwright.
+
 ## 1.1.0 (2026-10-28)
 
 On Linux, the action no longer runs apt on every scan. It installs Chromium, tries to start it, and installs the browser's system packages only when it can't start. GitHub's Ubuntu runners already have the libraries, so apt is skipped there. In some runs on a slow Ubuntu mirror, apt took 10 minutes, against about 3 minutes for the whole job without it.

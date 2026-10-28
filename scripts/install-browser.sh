@@ -32,8 +32,11 @@ if [ "$deps" = always ]; then
 fi
 
 "$playwright" install chromium
-if launch_log="$(NODE_PATH="$NGBR_A11Y_TOOLS/node_modules" timeout 60 node -e \
-  "require('playwright').chromium.launch().then((b) => b.close())" 2>&1)"; then
+# Load the action's own Playwright by path. A bare require('playwright') would
+# find the app's copy first when the job runs in a checkout that has one.
+if launch_log="$(timeout 60 node -e \
+  "require(process.argv[1]).chromium.launch().then((b) => b.close())" \
+  "$NGBR_A11Y_TOOLS/node_modules/playwright" 2>&1)"; then
   echo "Chromium starts with the runner's own libraries, so its system packages aren't installed."
 else
   echo "Chromium didn't start. The first lines of its error:"
