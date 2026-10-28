@@ -69,6 +69,9 @@ inputs:
   playwright-version:
     description: Version of Playwright to drive the browser with.
     default: 1.63.0
+  browser-deps:
+    description: On Linux, "auto" installs Chromium's system packages only when the browser can't start without them, and "always" installs them on every run. GitHub's Ubuntu runners need none. On those runners apt only adds font packages for Chinese, Japanese, Thai and other scripts.
+    default: auto
   github-token:
     description: Token used to post the pull request comment.
     default: ${{ github.token }}
@@ -120,12 +123,8 @@ runs:
       env:
         NGBR_A11Y_TOOLS: ${{ runner.temp }}/ngbr-a11y-tools
         PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/ngbr-a11y-browsers
-      run: |
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          "$NGBR_A11Y_TOOLS/node_modules/.bin/playwright" install --with-deps chromium
-        else
-          "$NGBR_A11Y_TOOLS/node_modules/.bin/playwright" install chromium
-        fi
+        IN_BROWSER_DEPS: ${{ inputs.browser-deps }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/install-browser.sh"
 
     # Saved straight away: the cache action's own post step skips failed jobs,
     # and a failing check is exactly when the next run needs a quick start.
