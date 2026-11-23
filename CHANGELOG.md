@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 (2026-11-23)
+
+Runs `@ngbracket/a11y-devtools` 0.19.0 by default. Each finding in the Markdown and HTML reports links to the WCAG criteria it relates to, in the [NgBracket accessibility reference](https://ngbracket.com/reference), after axe's own rule link. The pull request comment and the job summary table have a new WCAG column with the same links. Findings and baselines are unchanged.
+
 ## 1.1.1 (2026-10-28)
 
 Fixes the 1.1.0 launch check in jobs that run in a checkout with its own `playwright` package. The check loaded the app's Playwright, which looked for a different browser build, so it failed and apt ran anyway. It now loads the action's own Playwright.

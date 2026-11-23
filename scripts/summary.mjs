@@ -26,6 +26,36 @@ const code = (text) => {
   const t = cell(text);
   return t.includes('`') ? `\`\` ${t} \`\`` : `\`${t}\``;
 };
+/** Where the NgBracket accessibility reference explains each WCAG criterion. */
+const REFERENCE_WCAG_URL = 'https://ngbracket.com/reference/wcag';
+/**
+ * Slugs of the reference pages for the WCAG 2.2 A and AA criteria, by id. Same
+ * list as `WCAG22_A_AA` in a11y-devtools `src/report/wcag.ts`.
+ */
+const WCAG_SLUGS = {
+  '1.1.1': 'non-text-content', '1.2.1': 'audio-only-and-video-only-prerecorded',
+  '1.2.2': 'captions-prerecorded', '1.2.3': 'audio-description-or-media-alternative-prerecorded',
+  '1.2.4': 'captions-live', '1.2.5': 'audio-description-prerecorded', '1.3.1': 'info-and-relationships',
+  '1.3.2': 'meaningful-sequence', '1.3.3': 'sensory-characteristics', '1.3.4': 'orientation',
+  '1.3.5': 'identify-input-purpose', '1.4.1': 'use-of-color', '1.4.2': 'audio-control',
+  '1.4.3': 'contrast-minimum', '1.4.4': 'resize-text', '1.4.5': 'images-of-text', '1.4.10': 'reflow',
+  '1.4.11': 'non-text-contrast', '1.4.12': 'text-spacing', '1.4.13': 'content-on-hover-or-focus',
+  '2.1.1': 'keyboard', '2.1.2': 'no-keyboard-trap', '2.1.4': 'character-key-shortcuts',
+  '2.2.1': 'timing-adjustable', '2.2.2': 'pause-stop-hide', '2.3.1': 'three-flashes-or-below-threshold',
+  '2.4.1': 'bypass-blocks', '2.4.2': 'page-titled', '2.4.3': 'focus-order',
+  '2.4.4': 'link-purpose-in-context', '2.4.5': 'multiple-ways', '2.4.6': 'headings-and-labels',
+  '2.4.7': 'focus-visible', '2.4.11': 'focus-not-obscured-minimum', '2.5.1': 'pointer-gestures',
+  '2.5.2': 'pointer-cancellation', '2.5.3': 'label-in-name', '2.5.4': 'motion-actuation',
+  '2.5.7': 'dragging-movements', '2.5.8': 'target-size-minimum', '3.1.1': 'language-of-page',
+  '3.1.2': 'language-of-parts', '3.2.1': 'on-focus', '3.2.2': 'on-input', '3.2.3': 'consistent-navigation',
+  '3.2.4': 'consistent-identification', '3.2.6': 'consistent-help', '3.3.1': 'error-identification',
+  '3.3.2': 'labels-or-instructions', '3.3.3': 'error-suggestion',
+  '3.3.4': 'error-prevention-legal-financial-data', '3.3.7': 'redundant-entry',
+  '3.3.8': 'accessible-authentication-minimum', '4.1.2': 'name-role-value', '4.1.3': 'status-messages',
+};
+/** A finding's `wcag` ids (a11y-devtools 0.19.0 and later) as reference links. */
+const wcagLinks = (ids) =>
+  (ids ?? []).map((id) => (WCAG_SLUGS[id] ? `[${cell(id)}](${REFERENCE_WCAG_URL}/${WCAG_SLUGS[id]})` : cell(id))).join(', ');
 const clip = (text, max) => (text.length > max ? `${text.slice(0, max)}…` : text);
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
@@ -97,11 +127,11 @@ export function buildSummary(report, { scanExit, failOn, failOnScanError, runUrl
   const rows = (baseline ? (baseline.newFindings ?? []) : findings).slice().sort((a, b) => rank(a.impact) - rank(b.impact));
   if (rows.length) {
     lines.push('', baseline ? '#### New findings' : '#### Findings', '');
-    lines.push('| Impact | Rule | Component | Page | Element |', '|---|---|---|---|---|');
+    lines.push('| Impact | Rule | WCAG | Component | Page | Element |', '|---|---|---|---|---|---|');
     for (const f of rows.slice(0, MAX_ROWS)) {
       const rule = f.helpUrl ? `[${cell(f.id)}](${f.helpUrl})` : cell(f.id);
       lines.push(
-        `| ${cell(f.impact ?? '')} | ${rule} | ${cell(f.component ?? '(unknown component)')} | ${code(f.page)} | ${code(clip(String(f.target), 200))} |`,
+        `| ${cell(f.impact ?? '')} | ${rule} | ${wcagLinks(f.wcag)} | ${cell(f.component ?? '(unknown component)')} | ${code(f.page)} | ${code(clip(String(f.target), 200))} |`,
       );
     }
     if (rows.length > MAX_ROWS) lines.push('', `${rows.length - MAX_ROWS} more in the full report.`);
