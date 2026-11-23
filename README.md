@@ -34,7 +34,7 @@ The scan needs a development build. Component names come from Angular's dev-mode
 
 ## What you get
 
-- A comment on the pull request with the counts and a table of findings: impact, rule, component, page and element. Each push updates the same comment.
+- A comment on the pull request with the counts and a table of findings: impact, rule, WCAG criteria (linked to the [NgBracket accessibility reference](https://ngbracket.com/reference)), component, page and element. Each push updates the same comment.
 - The same text in the job summary, followed by the full Markdown report.
 - An artifact, `a11y-report`, with the report as Markdown, JSON and HTML.
 - A failed check when a finding is at or above `fail-on` (`serious` by default), or when a page doesn't load or scan.

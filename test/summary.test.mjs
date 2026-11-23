@@ -86,3 +86,29 @@ test('fail-on none with page errors still says pages that do not scan fail', () 
   assert.equal(verdict, 'fail');
   assert.match(body, /Findings don't fail the check \(`fail-on: none`\)\. Pages that don't scan still do\./);
 });
+
+test('each finding links its WCAG criteria to the NgBracket reference', () => {
+  const report = {
+    pages: [
+      {
+        label: '/',
+        findings: [
+          { ...finding('color-contrast', 'serious'), wcag: ['1.4.3'] },
+          { ...finding('ngbr/drag-without-keyboard', 'serious'), wcag: ['2.1.1', '2.5.7'] },
+          { ...finding('region', 'moderate'), wcag: [] },
+          finding('image-alt', 'critical'), // a11y-devtools before 0.19.0: no wcag field
+        ],
+      },
+    ],
+  };
+  const { body } = buildSummary(report, opts);
+  assert.match(body, /\| Impact \| Rule \| WCAG \| Component \| Page \| Element \|/);
+  const row = (id) => body.split('\n').find((l) => l.includes(`[${id}]`));
+  assert.match(row('color-contrast'), /\| \[1\.4\.3\]\(https:\/\/ngbracket\.com\/reference\/wcag\/contrast-minimum\) \|/);
+  assert.match(
+    row('ngbr/drag-without-keyboard'),
+    /\[2\.1\.1\]\(https:\/\/ngbracket\.com\/reference\/wcag\/keyboard\), \[2\.5\.7\]\(https:\/\/ngbracket\.com\/reference\/wcag\/dragging-movements\)/,
+  );
+  assert.match(row('region'), /\]\(https:\/\/example\.test\/region\) \|  \| HeroComponent/);
+  assert.match(row('image-alt'), /\]\(https:\/\/example\.test\/image-alt\) \|  \| HeroComponent/);
+});
