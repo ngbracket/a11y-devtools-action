@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0
+## 1.2.0 (2026-11-23)
 
 Runs `@ngbracket/a11y-devtools` 0.19.0 by default. Each finding in the Markdown and HTML reports links to the WCAG criteria it relates to, in the [NgBracket accessibility reference](https://ngbracket.com/reference), after axe's own rule link. The pull request comment and the job summary table have a new WCAG column with the same links. Findings and baselines are unchanged.
 
