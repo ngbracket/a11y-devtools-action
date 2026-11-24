@@ -30,6 +30,12 @@ if [ "$routes" -eq 0 ]; then
   exit 0
 fi
 
+if [ "${IN_NAVIGATION:-false}" = "true" ] && [ "$routes" -lt 2 ]; then
+  echo "::error title=Accessibility scan::navigation moves from one route to the next, so it needs 2 or more routes."
+  echo "exit-code=2" >> "$GITHUB_OUTPUT"
+  exit 0
+fi
+
 [ -n "$IN_SERVE" ] && args+=(--serve "$IN_SERVE" --serve-timeout "$IN_SERVE_TIMEOUT")
 [ "$IN_FAIL_ON" != "none" ] && [ -n "$IN_FAIL_ON" ] && args+=(--fail-on "$IN_FAIL_ON")
 [ -n "$IN_BASELINE" ] && args+=(--baseline "$IN_BASELINE")
@@ -40,6 +46,7 @@ if [ -z "$IN_DARK_CLASS$IN_DARK_ATTRIBUTE" ] && [ -n "$IN_COLOR_SCHEME" ]; then
 fi
 [ "$IN_KEYBOARD" = "true" ] && args+=(--keyboard)
 [ "$IN_FOCUS_TRAPS" = "true" ] && args+=(--focus-traps)
+[ "${IN_NAVIGATION:-false}" = "true" ] && args+=(--navigation)
 [ -n "$IN_TAGS" ] && args+=(--tags "$IN_TAGS")
 [ -n "$IN_FRAMEWORK_PREFIXES" ] && args+=(--framework-prefixes "$IN_FRAMEWORK_PREFIXES")
 [ -n "$IN_WAIT" ] && args+=(--wait "$IN_WAIT")
