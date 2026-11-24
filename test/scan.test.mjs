@@ -28,7 +28,7 @@ process.exit(${exit});`,
   writeFileSync(output, '');
   const base = {
     IN_ROUTES: '/', IN_SERVE: '', IN_BASE_URL: 'http://localhost:4200', IN_FAIL_ON: 'serious', IN_BASELINE: '',
-    IN_COLOR_SCHEME: 'light', IN_DARK_CLASS: '', IN_DARK_ATTRIBUTE: '', IN_KEYBOARD: 'false', IN_FOCUS_TRAPS: 'false',
+    IN_COLOR_SCHEME: 'light', IN_DARK_CLASS: '', IN_DARK_ATTRIBUTE: '', IN_KEYBOARD: 'false', IN_FOCUS_TRAPS: 'false', IN_NAVIGATION: 'false',
     IN_TAGS: '', IN_FRAMEWORK_PREFIXES: '', IN_SERVE_TIMEOUT: '180', IN_WAIT: '1500',
   };
   const res = spawnSync('bash', [script], {
@@ -62,6 +62,17 @@ test('inputs map to CLI flags', () => {
   assert.equal(flag('--fail-on'), 'serious');
   assert.ok(args.includes('--keyboard'));
   assert.ok(!args.includes('--color-scheme'), 'dark-class sets the scheme itself');
+});
+
+test('navigation passes --navigation, and needs 2 or more routes', () => {
+  const { args } = run({ IN_ROUTES: '/orders\n/orders/42', IN_NAVIGATION: 'true' });
+  assert.ok(args.includes('--navigation'));
+  assert.ok(!run({ IN_ROUTES: '/orders\n/orders/42' }).args.includes('--navigation'));
+
+  const one = run({ IN_ROUTES: '/', IN_NAVIGATION: 'true' });
+  assert.equal(one.outputs['exit-code'], '2');
+  assert.equal(one.args, null, 'the CLI never ran');
+  assert.match(one.stdout, /needs 2 or more routes/);
 });
 
 test('fail-on none passes no --fail-on', () => {

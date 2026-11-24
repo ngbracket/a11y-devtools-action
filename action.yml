@@ -42,6 +42,9 @@ inputs:
   focus-traps:
     description: Also walk each route with Tab presses to find keyboard traps.
     default: 'false'
+  navigation:
+    description: Also move between the routes inside the app, in the order listed, and report focus left on the page body after each route change. Needs 2 or more routes.
+    default: 'false'
   tags:
     description: Comma-separated axe tags to limit the rules, e.g. wcag22aa,best-practice.
     default: ''
@@ -65,7 +68,7 @@ inputs:
     default: a11y-report
   devtools-version:
     description: Version of @ngbracket/a11y-devtools to run.
-    default: 0.19.0
+    default: 0.20.0
   playwright-version:
     description: Version of Playwright to drive the browser with.
     default: 1.63.0
@@ -152,6 +155,7 @@ runs:
         IN_DARK_ATTRIBUTE: ${{ inputs.dark-attribute }}
         IN_KEYBOARD: ${{ inputs.keyboard }}
         IN_FOCUS_TRAPS: ${{ inputs.focus-traps }}
+        IN_NAVIGATION: ${{ inputs.navigation }}
         IN_TAGS: ${{ inputs.tags }}
         IN_FRAMEWORK_PREFIXES: ${{ inputs.framework-prefixes }}
         IN_SERVE_TIMEOUT: ${{ inputs.serve-timeout }}
