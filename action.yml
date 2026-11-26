@@ -48,6 +48,9 @@ inputs:
   page-titles:
     description: With 2 or more routes, report routes that share one page title (ngbr/duplicate-page-title). Set to false to turn it off.
     default: 'true'
+  id-references:
+    description: Report aria-labelledby or aria-describedby that name an id with no element (ngbr/missing-id-reference). Set to false to turn it off.
+    default: 'true'
   tags:
     description: Comma-separated axe tags to limit the rules, e.g. wcag22aa,best-practice.
     default: ''
@@ -160,6 +163,7 @@ runs:
         IN_FOCUS_TRAPS: ${{ inputs.focus-traps }}
         IN_NAVIGATION: ${{ inputs.navigation }}
         IN_PAGE_TITLES: ${{ inputs.page-titles }}
+        IN_ID_REFERENCES: ${{ inputs.id-references }}
         IN_TAGS: ${{ inputs.tags }}
         IN_FRAMEWORK_PREFIXES: ${{ inputs.framework-prefixes }}
         IN_SERVE_TIMEOUT: ${{ inputs.serve-timeout }}

@@ -28,7 +28,7 @@ process.exit(${exit});`,
   writeFileSync(output, '');
   const base = {
     IN_ROUTES: '/', IN_SERVE: '', IN_BASE_URL: 'http://localhost:4200', IN_FAIL_ON: 'serious', IN_BASELINE: '',
-    IN_COLOR_SCHEME: 'light', IN_DARK_CLASS: '', IN_DARK_ATTRIBUTE: '', IN_KEYBOARD: 'false', IN_FOCUS_TRAPS: 'false', IN_NAVIGATION: 'false', IN_PAGE_TITLES: 'true',
+    IN_COLOR_SCHEME: 'light', IN_DARK_CLASS: '', IN_DARK_ATTRIBUTE: '', IN_KEYBOARD: 'false', IN_FOCUS_TRAPS: 'false', IN_NAVIGATION: 'false', IN_PAGE_TITLES: 'true', IN_ID_REFERENCES: 'true',
     IN_TAGS: '', IN_FRAMEWORK_PREFIXES: '', IN_SERVE_TIMEOUT: '180', IN_WAIT: '1500',
   };
   const res = spawnSync('bash', [script], {
@@ -78,6 +78,11 @@ test('navigation passes --navigation, and needs 2 or more routes', () => {
 test('page-titles false passes --no-page-titles', () => {
   assert.ok(run({ IN_PAGE_TITLES: 'false' }).args.includes('--no-page-titles'));
   assert.ok(!run({}).args.includes('--no-page-titles'));
+});
+
+test('id-references false passes --no-id-references', () => {
+  assert.ok(run({ IN_ID_REFERENCES: 'false' }).args.includes('--no-id-references'));
+  assert.ok(!run({}).args.includes('--no-id-references'));
 });
 
 test('fail-on none passes no --fail-on', () => {

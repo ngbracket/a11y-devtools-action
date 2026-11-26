@@ -48,6 +48,7 @@ fi
 [ "$IN_FOCUS_TRAPS" = "true" ] && args+=(--focus-traps)
 [ "${IN_NAVIGATION:-false}" = "true" ] && args+=(--navigation)
 [ "${IN_PAGE_TITLES:-true}" = "false" ] && args+=(--no-page-titles)
+[ "${IN_ID_REFERENCES:-true}" = "false" ] && args+=(--no-id-references)
 [ -n "$IN_TAGS" ] && args+=(--tags "$IN_TAGS")
 [ -n "$IN_FRAMEWORK_PREFIXES" ] && args+=(--framework-prefixes "$IN_FRAMEWORK_PREFIXES")
 [ -n "$IN_WAIT" ] && args+=(--wait "$IN_WAIT")

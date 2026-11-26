@@ -76,6 +76,7 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `focus-traps` | `false` | Also press Tab through each route to find keyboard traps. |
 | `navigation` | `false` | Also move between the routes inside the app, in the order listed, by pressing Enter on a link to the next route. Reports focus left on the page body after a route change. Needs 2 or more routes. See [Check route changes](https://ngbracket.com/tools/a11y-devtools/docs/report-mode#check-route-changes). |
 | `page-titles` | `true` | With 2 or more routes, report routes that share one page title as [ngbr/duplicate-page-title](https://ngbracket.com/tools/a11y-devtools/docs/duplicate-page-title). Set `false` to turn it off. |
+| `id-references` | `true` | Report an `aria-labelledby` or `aria-describedby` that names an id with no element, as [ngbr/missing-id-reference](https://ngbracket.com/tools/a11y-devtools/docs/missing-id-reference). Set `false` to turn it off. |
 | `tags` | | Comma-separated axe tags to limit the rules, e.g. `wcag22aa,best-practice`. |
 | `framework-prefixes` | | Component-name prefixes to treat as third-party primitives, e.g. `Mat,Cdk,Nz`. |
 | `serve-timeout` | `180` | Seconds to wait for the dev server. A failed Angular build stops the scan straight away. |
