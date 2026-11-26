@@ -45,6 +45,9 @@ inputs:
   navigation:
     description: Also move between the routes inside the app, in the order listed, and report focus left on the page body after each route change. Needs 2 or more routes.
     default: 'false'
+  page-titles:
+    description: With 2 or more routes, report routes that share one page title (ngbr/duplicate-page-title). Set to false to turn it off.
+    default: 'true'
   tags:
     description: Comma-separated axe tags to limit the rules, e.g. wcag22aa,best-practice.
     default: ''
@@ -68,7 +71,7 @@ inputs:
     default: a11y-report
   devtools-version:
     description: Version of @ngbracket/a11y-devtools to run.
-    default: 0.20.0
+    default: 0.21.0
   playwright-version:
     description: Version of Playwright to drive the browser with.
     default: 1.63.0
@@ -156,6 +159,7 @@ runs:
         IN_KEYBOARD: ${{ inputs.keyboard }}
         IN_FOCUS_TRAPS: ${{ inputs.focus-traps }}
         IN_NAVIGATION: ${{ inputs.navigation }}
+        IN_PAGE_TITLES: ${{ inputs.page-titles }}
         IN_TAGS: ${{ inputs.tags }}
         IN_FRAMEWORK_PREFIXES: ${{ inputs.framework-prefixes }}
         IN_SERVE_TIMEOUT: ${{ inputs.serve-timeout }}

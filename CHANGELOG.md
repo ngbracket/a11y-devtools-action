@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+Runs `@ngbracket/a11y-devtools` 0.21.0 by default. With 2 or more routes, routes that share one page title are now reported as `ngbr/duplicate-page-title` (WCAG 2.4.2), a moderate finding. If your app has one title on every route and the workflow uses a `baseline` with `fail-on: moderate` or lower, the first run after upgrading fails on these. Fix the titles, update the baseline, or set the new `page-titles` input to `false`. The `keyboard` checks now also work on a production build.
+
 ## 1.3.0 (2026-11-24)
 
 Runs `@ngbracket/a11y-devtools` 0.20.0 by default. A new `navigation` input moves between the routes inside the app, in the order listed. It presses Enter on a link to the next route, or changes the URL when there's no link. Focus left on the page body after a route change is reported as `ngbr/focus-lost-on-navigation` (WCAG 2.4.3), and each route's report gets a "Route change" section. It needs 2 or more routes, and the scan stops with an error if there's only one. It's off by default, so existing workflows get the same findings as before.

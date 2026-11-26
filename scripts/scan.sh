@@ -47,6 +47,7 @@ fi
 [ "$IN_KEYBOARD" = "true" ] && args+=(--keyboard)
 [ "$IN_FOCUS_TRAPS" = "true" ] && args+=(--focus-traps)
 [ "${IN_NAVIGATION:-false}" = "true" ] && args+=(--navigation)
+[ "${IN_PAGE_TITLES:-true}" = "false" ] && args+=(--no-page-titles)
 [ -n "$IN_TAGS" ] && args+=(--tags "$IN_TAGS")
 [ -n "$IN_FRAMEWORK_PREFIXES" ] && args+=(--framework-prefixes "$IN_FRAMEWORK_PREFIXES")
 [ -n "$IN_WAIT" ] && args+=(--wait "$IN_WAIT")
