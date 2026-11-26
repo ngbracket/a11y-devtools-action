@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.4.0
+## 1.4.0 (2026-11-26)
 
 Runs `@ngbracket/a11y-devtools` 0.21.0 by default, which adds three checks that run with no input and one you turn on.
 
