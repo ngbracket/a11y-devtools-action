@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.4.0 (2026-11-26)
+
+Runs `@ngbracket/a11y-devtools` 0.21.0 by default, which adds three checks that run with no input and one you turn on.
+
+| Rule | Reports | Impact | Turn it off |
+|---|---|---|---|
+| `ngbr/duplicate-page-title` (WCAG 2.4.2) | Routes that share one page title, with 2 or more routes | moderate | `page-titles: false` |
+| `ngbr/missing-id-reference` (WCAG 4.1.2, 1.3.1) | An `aria-labelledby` or `aria-describedby` that names a missing id | serious, moderate or minor | `id-references: false` |
+| `ngbr/missing-autocomplete` (WCAG 1.3.5) | Name, email, phone and address fields with no `autocomplete` | moderate | `input-purpose: false` |
+
+Upgrading can fail a workflow that uses a `baseline`. A missing `aria-labelledby` id on an element with no other name is serious, so it fails the default `fail-on: serious`. The other new findings are moderate or minor, so they fail `fail-on: moderate` or lower. Fix them, update the baseline, or turn the check off with its input.
+
+A new `focus-indicators` input, off by default, measures each tab stop's focus indicator from screenshots and reports one that doesn't change, or changes by less than 3:1, as `ngbr/focus-indicator-contrast` (WCAG 2.4.7 and 1.4.11). Its findings are serious or moderate, so turning it on in a workflow with a baseline can fail the gate in the same way.
+
+The `keyboard` checks now also work on a production build.
+
 ## 1.3.0 (2026-11-24)
 
 Runs `@ngbracket/a11y-devtools` 0.20.0 by default. A new `navigation` input moves between the routes inside the app, in the order listed. It presses Enter on a link to the next route, or changes the URL when there's no link. Focus left on the page body after a route change is reported as `ngbr/focus-lost-on-navigation` (WCAG 2.4.3), and each route's report gets a "Route change" section. It needs 2 or more routes, and the scan stops with an error if there's only one. It's off by default, so existing workflows get the same findings as before.

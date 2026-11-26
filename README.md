@@ -74,7 +74,11 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `dark-attribute` | | Attribute on `<html>` that turns on your dark theme, as `name=value`. Implies `both`. |
 | `keyboard` | `false` | Also run the keyboard checks: controls you can't reach with Tab, click handlers without a keyboard equivalent, and tab order that doesn't follow the layout. |
 | `focus-traps` | `false` | Also press Tab through each route to find keyboard traps. |
+| `focus-indicators` | `false` | Also press Tab through each route and measure every tab stop's focus indicator from screenshots. Reports a stop that doesn't change, or changes by less than 3:1, as [ngbr/focus-indicator-contrast](https://ngbracket.com/tools/a11y-devtools/docs/focus-indicator-contrast). |
 | `navigation` | `false` | Also move between the routes inside the app, in the order listed, by pressing Enter on a link to the next route. Reports focus left on the page body after a route change. Needs 2 or more routes. See [Check route changes](https://ngbracket.com/tools/a11y-devtools/docs/report-mode#check-route-changes). |
+| `page-titles` | `true` | With 2 or more routes, report routes that share one page title as [ngbr/duplicate-page-title](https://ngbracket.com/tools/a11y-devtools/docs/duplicate-page-title). Set `false` to turn it off. |
+| `id-references` | `true` | Report an `aria-labelledby` or `aria-describedby` that names an id with no element, as [ngbr/missing-id-reference](https://ngbracket.com/tools/a11y-devtools/docs/missing-id-reference). Set `false` to turn it off. |
+| `input-purpose` | `true` | Report name, email, phone and address fields with no `autocomplete` attribute, as [ngbr/missing-autocomplete](https://ngbracket.com/tools/a11y-devtools/docs/missing-autocomplete). Set `false` to turn it off. |
 | `tags` | | Comma-separated axe tags to limit the rules, e.g. `wcag22aa,best-practice`. |
 | `framework-prefixes` | | Component-name prefixes to treat as third-party primitives, e.g. `Mat,Cdk,Nz`. |
 | `serve-timeout` | `180` | Seconds to wait for the dev server. A failed Angular build stops the scan straight away. |
@@ -82,7 +86,7 @@ The comment then shows new, fixed and unchanged counts and lists only the new fi
 | `comment` | `true` | Comment on pull requests. |
 | `upload-artifact` | `true` | Upload the reports. |
 | `artifact-name` | `a11y-report` | Artifact name. It must be unique in the workflow run, so a matrix or a second scan needs its own, e.g. `a11y-report-${{ matrix.app }}`. Each name also gets its own comment. |
-| `devtools-version` | `0.20.0` | Version of `@ngbracket/a11y-devtools` to run. |
+| `devtools-version` | `0.21.0` | Version of `@ngbracket/a11y-devtools` to run. |
 | `playwright-version` | `1.63.0` | Version of Playwright to run the browser with. |
 | `browser-deps` | `auto` | Linux only. `auto` installs Chromium's system packages only when the browser can't start without them. `always` installs them on every run. See [How it installs](#how-it-installs). |
 | `github-token` | `github.token` | Token for the comment. |
