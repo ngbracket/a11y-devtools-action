@@ -47,6 +47,7 @@ fi
 [ "$IN_KEYBOARD" = "true" ] && args+=(--keyboard)
 [ "$IN_FOCUS_TRAPS" = "true" ] && args+=(--focus-traps)
 [ "${IN_NAVIGATION:-false}" = "true" ] && args+=(--navigation)
+[ "${IN_FOCUS_INDICATORS:-false}" = "true" ] && args+=(--focus-indicators)
 [ "${IN_PAGE_TITLES:-true}" = "false" ] && args+=(--no-page-titles)
 [ "${IN_ID_REFERENCES:-true}" = "false" ] && args+=(--no-id-references)
 [ "${IN_INPUT_PURPOSE:-true}" = "false" ] && args+=(--no-input-purpose)

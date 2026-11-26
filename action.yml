@@ -42,6 +42,9 @@ inputs:
   focus-traps:
     description: Also walk each route with Tab presses to find keyboard traps.
     default: 'false'
+  focus-indicators:
+    description: Also press Tab through each route and measure every tab stop's focus indicator from screenshots, reporting one that doesn't change, or changes by less than 3:1.
+    default: 'false'
   navigation:
     description: Also move between the routes inside the app, in the order listed, and report focus left on the page body after each route change. Needs 2 or more routes.
     default: 'false'
@@ -165,6 +168,7 @@ runs:
         IN_KEYBOARD: ${{ inputs.keyboard }}
         IN_FOCUS_TRAPS: ${{ inputs.focus-traps }}
         IN_NAVIGATION: ${{ inputs.navigation }}
+        IN_FOCUS_INDICATORS: ${{ inputs.focus-indicators }}
         IN_PAGE_TITLES: ${{ inputs.page-titles }}
         IN_ID_REFERENCES: ${{ inputs.id-references }}
         IN_INPUT_PURPOSE: ${{ inputs.input-purpose }}
