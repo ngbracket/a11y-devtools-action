@@ -2,7 +2,7 @@
 
 ## 1.4.0
 
-Runs `@ngbracket/a11y-devtools` 0.21.0 by default. With 2 or more routes, routes that share one page title are now reported as `ngbr/duplicate-page-title` (WCAG 2.4.2), a moderate finding. If your app has one title on every route and the workflow uses a `baseline` with `fail-on: moderate` or lower, the first run after upgrading fails on these. Fix the titles, update the baseline, or set the new `page-titles` input to `false`. An `aria-labelledby` or `aria-describedby` that names a missing id is now reported as `ngbr/missing-id-reference` (WCAG 4.1.2 and 1.3.1), with a new `id-references` input to turn it off. The `keyboard` checks now also work on a production build.
+Runs `@ngbracket/a11y-devtools` 0.21.0 by default. With 2 or more routes, routes that share one page title are now reported as `ngbr/duplicate-page-title` (WCAG 2.4.2), a moderate finding. If your app has one title on every route and the workflow uses a `baseline` with `fail-on: moderate` or lower, the first run after upgrading fails on these. Fix the titles, update the baseline, or set the new `page-titles` input to `false`. An `aria-labelledby` or `aria-describedby` that names a missing id is now reported as `ngbr/missing-id-reference` (WCAG 4.1.2 and 1.3.1), with a new `id-references` input to turn it off. Name, email, phone and address fields with no `autocomplete` attribute are now reported as `ngbr/missing-autocomplete` (WCAG 1.3.5), with a new `input-purpose` input to turn it off. The `keyboard` checks now also work on a production build.
 
 ## 1.3.0 (2026-11-24)
 

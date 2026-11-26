@@ -51,6 +51,9 @@ inputs:
   id-references:
     description: Report aria-labelledby or aria-describedby that name an id with no element (ngbr/missing-id-reference). Set to false to turn it off.
     default: 'true'
+  input-purpose:
+    description: Report name, email, phone and address fields with no autocomplete attribute (ngbr/missing-autocomplete). Set to false to turn it off.
+    default: 'true'
   tags:
     description: Comma-separated axe tags to limit the rules, e.g. wcag22aa,best-practice.
     default: ''
@@ -164,6 +167,7 @@ runs:
         IN_NAVIGATION: ${{ inputs.navigation }}
         IN_PAGE_TITLES: ${{ inputs.page-titles }}
         IN_ID_REFERENCES: ${{ inputs.id-references }}
+        IN_INPUT_PURPOSE: ${{ inputs.input-purpose }}
         IN_TAGS: ${{ inputs.tags }}
         IN_FRAMEWORK_PREFIXES: ${{ inputs.framework-prefixes }}
         IN_SERVE_TIMEOUT: ${{ inputs.serve-timeout }}
