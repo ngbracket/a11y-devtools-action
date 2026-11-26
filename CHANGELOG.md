@@ -2,7 +2,19 @@
 
 ## 1.4.0
 
-Runs `@ngbracket/a11y-devtools` 0.21.0 by default. With 2 or more routes, routes that share one page title are now reported as `ngbr/duplicate-page-title` (WCAG 2.4.2), a moderate finding. If your app has one title on every route and the workflow uses a `baseline` with `fail-on: moderate` or lower, the first run after upgrading fails on these. Fix the titles, update the baseline, or set the new `page-titles` input to `false`. An `aria-labelledby` or `aria-describedby` that names a missing id is now reported as `ngbr/missing-id-reference` (WCAG 4.1.2 and 1.3.1), with a new `id-references` input to turn it off. Name, email, phone and address fields with no `autocomplete` attribute are now reported as `ngbr/missing-autocomplete` (WCAG 1.3.5), a moderate finding, with a new `input-purpose` input to turn it off. A new `focus-indicators` input, off by default, measures each tab stop's focus indicator from screenshots and reports one that doesn't change, or changes by less than 3:1, as `ngbr/focus-indicator-contrast` (WCAG 2.4.7 and 1.4.11). Like the page-title check, it can fail a workflow with a `baseline` and `fail-on: moderate` or lower on the first run after upgrading. The `keyboard` checks now also work on a production build.
+Runs `@ngbracket/a11y-devtools` 0.21.0 by default, which adds three checks that run with no input and one you turn on.
+
+| Rule | Reports | Impact | Turn it off |
+|---|---|---|---|
+| `ngbr/duplicate-page-title` (WCAG 2.4.2) | Routes that share one page title, with 2 or more routes | moderate | `page-titles: false` |
+| `ngbr/missing-id-reference` (WCAG 4.1.2, 1.3.1) | An `aria-labelledby` or `aria-describedby` that names a missing id | serious, moderate or minor | `id-references: false` |
+| `ngbr/missing-autocomplete` (WCAG 1.3.5) | Name, email, phone and address fields with no `autocomplete` | moderate | `input-purpose: false` |
+
+Upgrading can fail a workflow that uses a `baseline`. A missing `aria-labelledby` id on an element with no other name is serious, so it fails the default `fail-on: serious`. The other new findings are moderate or minor, so they fail `fail-on: moderate` or lower. Fix them, update the baseline, or turn the check off with its input.
+
+A new `focus-indicators` input, off by default, measures each tab stop's focus indicator from screenshots and reports one that doesn't change, or changes by less than 3:1, as `ngbr/focus-indicator-contrast` (WCAG 2.4.7 and 1.4.11). Its findings are serious or moderate, so turning it on in a workflow with a baseline can fail the gate in the same way.
+
+The `keyboard` checks now also work on a production build.
 
 ## 1.3.0 (2026-11-24)
 
